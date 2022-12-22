@@ -1,32 +1,67 @@
-import { Bank } from "./types/bank"
-import { Customer } from "./types/Customer"
-import { Branch } from "./types/Branch"
+import {Branch} from './Branch'
+import {Customer} from './Customer'
 
+export class Bank {
+    private branches: Branch[] 
 
-const arizonaBank = new Bank("Arizona")
-const westBranch = new Branch("West Branch")
-const sunBranch = new Branch("Sun Branch")
-const customer1 = new Customer("John")
-const customer2 = new Customer("Anna")
-const customer3 = new Customer("John")
+    constructor(private name: string) {
+        this.branches = []
+    }
+    addBranch(branch: Branch): boolean {
+        if(this.branches.includes(branch)) {
+            console.log(`${branch.getName()} already exists`)
+            return false
+        }
+        else {
+            this.branches.push(branch)
+            console.log(`${branch.getName()} added successfully`)
+            return true
+        }
+    }
+    addCustomer(branch: Branch, customer: Customer): boolean {
+        if (branch.addCustomer(customer)) {
+            return true;
+            }
+            return false;
+    }
+    addCustomerTransaction(branch: Branch, id: string, amount: number): boolean {
+        if(branch.addCustomerTransaction(id, amount)){
+            return true
+        }
+        return false
+    }
+    findBranchByName(branchName: string): Branch[] | null {
+        let newArray: Branch[] = []
+        this.branches.forEach((branch) => {
+            if (branch.getName().includes(branchName)) {
+                newArray.push(branch)
+            }
+            console.log(`${branchName} not exists`)
+        })
+        return newArray.length > 0 ? newArray : null
+        
+    }
+    checkBranch(branch: Branch):boolean {
+        if(this.branches.includes(branch)) {
+            console.log("branch exists")
+            return true
+        }
+        else {
+            console.log("branch not exist")
+            return false
+        }
 
-arizonaBank.addBranch(westBranch) //West Branch added successfully
-arizonaBank.addBranch(sunBranch) //Sun Branch added successfully
-arizonaBank.addBranch(westBranch) //West Branch already exists
-
-arizonaBank.findBranchByName("bank")
-arizonaBank.findBranchByName("sun")
-
-arizonaBank.addCustomer(westBranch, customer1)//John added successfully
-arizonaBank.addCustomer(westBranch, customer3)//John added successfully
-arizonaBank.addCustomer(sunBranch, customer1)//John added successfully
-arizonaBank.addCustomer(sunBranch, customer2)//Anna added successfully
-
-arizonaBank.addCustomerTransaction(westBranch, customer1.getId, 3000)
-arizonaBank.addCustomerTransaction(westBranch, customer1.getId, 2000)
-arizonaBank.addCustomerTransaction(westBranch, customer2.getId, 3000)
-
-customer1.addTransactions(-1000)
-console.log(customer1.getBalance())
-console.log(arizonaBank.listCustomers(westBranch, true))
-console.log(arizonaBank.listCustomers(sunBranch,true))
+    }
+    listCustomers(branch: Branch, bhoolean: boolean): boolean {
+        if (bhoolean) {
+            this.branches.forEach((branch) => {branch.getCustomers().forEach((customer) => {
+                console.log("Customer Name", customer.getName())
+                console.log("Customer Id", customer.getId)
+                console.log("Customer Transactions", customer.getTransactions())
+                console.log("Customer branch", branch.getName())
+                })
+            })
+        }
+        return this.checkBranch(branch)
+    }
+}
